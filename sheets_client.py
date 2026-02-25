@@ -16,9 +16,17 @@ def get_service():
     service = build("sheets", "v4", credentials=creds)
     return service.spreadsheets()
 
+
 def get_pilots():
     """
-    Legge i piloti dal tab 'Piloti', righe 2–100 (adatta se servono più righe).
+    Legge i piloti dal tab 'Piloti', righe 2–100.
+    Struttura attesa:
+    A: piattaforma
+    B: team
+    C: pilota
+    D: ruolo
+    E: TOT (formula)
+    F..: gare
     """
     sheets = get_service()
     result = sheets.values().get(
@@ -43,12 +51,12 @@ def get_pilots():
     return pilots
 
 
-def update_cell(row, col_letter, value):
+def update_cell(row, col_letter, value, sheet_name="Piloti"):
     """
-    Aggiorna una singola cella, es. H5
+    Aggiorna una singola cella (default tab Piloti).
     """
     sheets = get_service()
-    range_ = f"RISULTATI LG F1!{col_letter}{row}"
+    range_ = f"{sheet_name}!{col_letter}{row}"
     body = {"values": [[value]]}
     sheets.values().update(
         spreadsheetId=SPREADSHEET_ID,
@@ -57,10 +65,16 @@ def update_cell(row, col_letter, value):
         body=body
     ).execute()
 
+
 def get_standings():
+    """
+    Classifica piloti e team.
+    Piloti: tab Piloti, C = pilota, E = TOT.
+    Team: tab Scuderie, A = team, B = TOT.
+    """
     sheets = get_service()
 
-    # Classifica piloti: nome in C, TOT in E (righe 2–100)
+    # Piloti
     result_pilots = sheets.values().get(
         spreadsheetId=SPREADSHEET_ID,
         range="Piloti!C2:E100"
@@ -74,12 +88,12 @@ def get_standings():
         tot = 0.0
         if len(row) >= 3 and row[2]:
             try:
-                tot = float(row[2])   # E = TOT
+                tot = float(row[2])  # E = TOT
             except ValueError:
                 tot = 0.0
         pilots.append({"name": name, "tot": tot})
 
-    # Classifica team: nome in A, TOT in B (righe 2–50)
+    # Team
     result_teams = sheets.values().get(
         spreadsheetId=SPREADSHEET_ID,
         range="Scuderie!A2:B50"
