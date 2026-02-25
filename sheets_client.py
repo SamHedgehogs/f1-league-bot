@@ -7,6 +7,7 @@ SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]  # read+write
 
+
 def get_service():
     json_str = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
     if not json_str:
@@ -19,19 +20,18 @@ def get_service():
 
 def get_pilots():
     """
-    Legge i piloti dal tab 'Piloti', righe 2–100.
-    Struttura attesa:
+    Tab piloti = 'RISULTATI LG F1'
     A: piattaforma
-    B: team
+    B: scuderia
     C: pilota
     D: ruolo
-    E: TOT (formula)
+    E: TOT
     F..: gare
     """
     sheets = get_service()
     result = sheets.values().get(
         spreadsheetId=SPREADSHEET_ID,
-        range="Piloti!A2:Z100"
+        range="RISULTATI LG F1!A2:Z100"
     ).execute()
     values = result.get("values", [])
     pilots = []
@@ -51,10 +51,16 @@ def get_pilots():
     return pilots
 
 
-def update_cell(row, col_letter, value, sheet_name="Piloti"):
+def update_cell(row, col_letter, value, sheet_name="RISULTATI LG F1"):
+    """
+    VERSIONE DI TEST:
+    ignora row/col_letter e prova sempre a scrivere 12345 in A2
+    del tab 'RISULTATI LG F1'.
+    Serve solo per verificare che l'accesso in scrittura funzioni.
+    """
     sheets = get_service()
-    range_ = f"{sheet_name}!{col_letter}{row}"
-    body = {"values": [[value]]}
+    range_ = "RISULTATI LG F1!A2"
+    body = {"values": [[12345]]}
     sheets.values().update(
         spreadsheetId=SPREADSHEET_ID,
         range=range_,
@@ -66,15 +72,15 @@ def update_cell(row, col_letter, value, sheet_name="Piloti"):
 def get_standings():
     """
     Classifica piloti e team.
-    Piloti: tab Piloti, C = pilota, E = TOT.
-    Team: tab Scuderie, A = team, B = TOT.
+    Piloti: tab 'RISULTATI LG F1', C = pilota, E = TOT.
+    Team: tab 'Scuderie', A = team, B = TOT.
     """
     sheets = get_service()
 
     # Piloti
     result_pilots = sheets.values().get(
         spreadsheetId=SPREADSHEET_ID,
-        range="Piloti!C2:E100"
+        range="RISULTATI LG F1!C2:E100"
     ).execute()
     values_p = result_pilots.get("values", [])
     pilots = []
