@@ -10,10 +10,10 @@ from sheets_client import get_pilots, update_cell, get_standings
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 # DA CAMBIARE: metti qui gli ID dei canali veri
-CHANNEL_ISCRIZIONE = 0      # canale "iscrizione"
-CHANNEL_CALENDARIO = 0      # canale "calendario"
-CHANNEL_RISULTATI = 0       # canale "risultati"
-CHANNEL_CLASSIFICA = 0      # canale "classifica"
+CHANNEL_ISCRIZIONE = 1476155744733888514      # canale "iscrizione"
+CHANNEL_CALENDARIO = 1476155763410862154      # canale "calendario"
+CHANNEL_RISULTATI = 1476155799771283621       # canale "risultati"
+CHANNEL_CLASSIFICA = 1476155822743617617      # canale "classifica"
 
 # Mappa gara -> colonna del foglio (adatta alle tue colonne)
 RACE_COLUMNS = {
