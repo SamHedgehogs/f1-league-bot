@@ -9,7 +9,7 @@ from sheets_client import get_pilots, update_cell, get_standings, get_service
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 
-# Metti qui gli ID reali dei canali
+# ID reali dei canali
 CHANNEL_ISCRIZIONE = 1476155744733888514      # canale "iscrizione"
 CHANNEL_CALENDARIO = 1476155763410862154      # canale "calendario"
 CHANNEL_RISULTATI = 1476155799771283621       # canale "risultati"
@@ -56,7 +56,7 @@ async def on_ready():
 def find_first_empty_column(sheet_name: str, header_row: int, start_col_letter: str) -> str:
     """
     Trova la prima colonna vuota nella riga header_row,
-    a partire da start_col_letter (es. F per Piloti, C per Scuderie).
+    a partire da start_col_letter (es. F per piloti, C per scuderie).
     """
     sheets = get_service()
     start_col = ord(start_col_letter)
@@ -92,11 +92,11 @@ async def set_current_race(
 ):
     nome_gara_up = nome_gara.upper().strip()
 
-    # 1) colonna libera in Piloti (da F in poi)
-    col_piloti = find_first_empty_column("Piloti", header_row=1, start_col_letter="F")
-    update_cell(row=1, col_letter=col_piloti, value=nome_gara_up, sheet_name="Piloti")
+    # 1) colonna libera nel tab piloti "RISULTATI LG F1" (da F in poi)
+    col_piloti = find_first_empty_column("RISULTATI LG F1", header_row=1, start_col_letter="F")
+    update_cell(row=1, col_letter=col_piloti, value=nome_gara_up, sheet_name="RISULTATI LG F1")
 
-    # 2) colonna libera in Scuderie (da C in poi)
+    # 2) colonna libera nel tab "Scuderie" (da C in poi)
     sheets = get_service()
     col_team = find_first_empty_column("Scuderie", header_row=1, start_col_letter="C")
     range_team_header = f"Scuderie!{col_team}1"
@@ -108,7 +108,7 @@ async def set_current_race(
         body=body
     ).execute()
 
-    # 3) salva nello state
+    # 3) salva info gara nello state
     state = {
         "current_race": {
             "nome": nome_gara_up,
@@ -155,7 +155,7 @@ async def on_message(message: discord.Message):
     pilots = get_pilots()
     pilot_map = {p["pilota"].strip().lower(): p["row"] for p in pilots if p["pilota"]}
 
-    # es. "1 Tummy", "2 Samuel"
+    # Formato riga: "1 Tummy", "2 Samuel", ecc.
     pattern = re.compile(r"^\s*(\d+)\s+(.+)$")
 
     updates = []
@@ -177,7 +177,12 @@ async def on_message(message: discord.Message):
             updates.append((pos, name, pts, None))
             continue
 
-        update_cell(row=row, col_letter=col_letter, value=pts, sheet_name="Piloti")
+        update_cell(
+            row=row,
+            col_letter=col_letter,
+            value=pts,
+            sheet_name="RISULTATI LG F1"
+        )
         updates.append((pos, name, pts, row))
 
     await post_standings(message.guild)
