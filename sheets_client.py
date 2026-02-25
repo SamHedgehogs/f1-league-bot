@@ -52,9 +52,6 @@ def get_pilots():
 
 
 def update_cell(row, col_letter, value, sheet_name="Piloti"):
-    """
-    Aggiorna una singola cella (default tab Piloti).
-    """
     sheets = get_service()
     range_ = f"{sheet_name}!{col_letter}{row}"
     body = {"values": [[value]]}
