@@ -18,30 +18,30 @@ def get_service():
 
 def get_pilots():
     """
-    Legge piloti dal tab principale (adatta range se serve).
-    A2:Z24 = righe piloti.
+    Legge i piloti dal tab 'Piloti', righe 2–100 (adatta se servono più righe).
     """
     sheets = get_service()
     result = sheets.values().get(
         spreadsheetId=SPREADSHEET_ID,
-        range="RISULTATI LG F1!A2:Z24"
+        range="Piloti!A2:Z100"
     ).execute()
     values = result.get("values", [])
     pilots = []
     for idx, row in enumerate(values, start=2):
         piattaforma = row[0] if len(row) > 0 else ""
-        scuderia = row[1] if len(row) > 1 else ""
+        team = row[1] if len(row) > 1 else ""
         pilota = row[2] if len(row) > 2 else ""
         ruolo = row[3] if len(row) > 3 else ""
         pilots.append({
             "row": idx,
             "piattaforma": piattaforma,
-            "scuderia": scuderia,
+            "team": team,
             "pilota": pilota,
             "ruolo": ruolo,
             "raw": row,
         })
     return pilots
+
 
 def update_cell(row, col_letter, value):
     """
