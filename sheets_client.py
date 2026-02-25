@@ -58,45 +58,42 @@ def update_cell(row, col_letter, value):
     ).execute()
 
 def get_standings():
-    """
-    Legge classifica piloti e team.
-    Adatta range/colonne alla tua configurazione.
-    """
     sheets = get_service()
-    # Piloti: pilota (C), TOT (es. E) righe 2–24
+
+    # Classifica piloti: nome in C, TOT in E (righe 2–100)
     result_pilots = sheets.values().get(
         spreadsheetId=SPREADSHEET_ID,
-        range="RISULTATI LG F1!C2:E24"
+        range="Piloti!C2:E100"
     ).execute()
     values_p = result_pilots.get("values", [])
     pilots = []
     for row in values_p:
         if len(row) < 1:
             continue
-        name = row[0]
+        name = row[0]   # C = pilota
         tot = 0.0
         if len(row) >= 3 and row[2]:
             try:
-                tot = float(row[2])
+                tot = float(row[2])   # E = TOT
             except ValueError:
                 tot = 0.0
         pilots.append({"name": name, "tot": tot})
 
-    # Team: nome (B), TOT (es. E) righe 33–43
+    # Classifica team: nome in A, TOT in B (righe 2–50)
     result_teams = sheets.values().get(
         spreadsheetId=SPREADSHEET_ID,
-        range="RISULTATI LG F1!B33:E43"
+        range="Scuderie!A2:B50"
     ).execute()
     values_t = result_teams.get("values", [])
     teams = []
     for row in values_t:
         if len(row) < 1:
             continue
-        name = row[0]
+        name = row[0]   # A = team
         tot = 0.0
-        if len(row) >= 3 and row[2]:
+        if len(row) >= 2 and row[1]:
             try:
-                tot = float(row[2])
+                tot = float(row[1])  # B = TOT
             except ValueError:
                 tot = 0.0
         teams.append({"name": name, "tot": tot})
