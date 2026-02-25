@@ -80,9 +80,16 @@ def find_first_empty_column(sheet_name: str, header_row: int, start_col_letter: 
     return chr(end_col)
 
 
-@bot.tree.command(name="set_current_race", description="Imposta la gara attuale (nome) e il tipo (gara/sprint)")
+@bot.tree.command(
+    name="set_current_race",
+    description="Imposta la gara attuale (nome) e il tipo (gara/sprint)"
+)
 @app_commands.describe(nome_gara="Es. BELGIO", tipo="GARA o SPRINT")
-async def set_current_race(interaction: discord.Interaction, nome_gara: str, tipo: TipoGara):
+async def set_current_race(
+    interaction: discord.Interaction,
+    nome_gara: str,
+    tipo: TipoGara
+):
     nome_gara_up = nome_gara.upper().strip()
 
     # 1) colonna libera in Piloti (da F in poi)
@@ -148,6 +155,7 @@ async def on_message(message: discord.Message):
     pilots = get_pilots()
     pilot_map = {p["pilota"].strip().lower(): p["row"] for p in pilots if p["pilota"]}
 
+    # es. "1 Tummy", "2 Samuel"
     pattern = re.compile(r"^\s*(\d+)\s+(.+)$")
 
     updates = []
